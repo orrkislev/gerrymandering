@@ -1,0 +1,58 @@
+<!doctype html>
+<html >
+    <head>
+        <link rel="stylesheet" href="main.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script type="text/javascript" src="vue.js"></script>
+        <script type="text/javascript" src="Sortable.js"></script>
+        <script type="text/javascript" src="vuedraggable.js"></script>
+    </head>
+    <body>
+     
+     <div id="main">
+		<div class='list'>
+			<input type="range" min="1" max="100000" value="30000" class="slider" v-model="showThreshold">
+			<draggable class="dragArea" :list="listAll" :options="{group:'cities'}" @change="updateChange">
+				<div v-for="item in listAll" v-if="item.sum>showThreshold">
+					<city v-bind="item"></city>
+				</div>
+			</draggable>
+		</div>
+		
+		<div class='list' v-for="(myList,listIndex) in lists">
+			<input class='list-name' v-model="myList.listName">
+			<button v-on:click="remove(listIndex)">X</button>
+			<draggable class="dragArea" :list="myList.listItems" :options="{group:'cities'}" @change="updateChange">
+				<div v-for="item in myList.listItems" v-if="item.sum>showThreshold">
+					<city v-bind="item"></city>
+				</div>
+			</draggable>
+			<div v-if="myList.listItems.length>0">
+				<span v-for="item in listTotal(listIndex)" >
+					{{ item }}
+					<br>
+				</span>
+			</div>
+		</div>
+
+		<button v-on:click="addList"> add list </button>
+    </div>
+	
+	
+	<script type="text/x-template" id="city-template">
+		<div class="list-item" @click="openAndClose">
+			{{name}}
+			<div v-if="expanded">
+				<span v-for="party in votes">
+					{{ party.name }} - {{party.votes}}
+					<br>
+				</span>
+			</div>	
+		</div>
+	</script>
+	
+	
+	<script type="text/javascript" src="data.js"></script>
+    <script type="text/javascript" src="test.js"></script>
+    </body>
+</html>

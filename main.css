@@ -1,0 +1,21 @@
+#main{
+}
+
+.list{
+	width:200px;
+	border: 1px solid grey;
+	float:left;
+	text-align: center;
+	margin-right:5px;
+	padding-top:5px;
+}
+
+.list-item{
+	background-color: #ccc;
+	padding: 5px;
+	margin: 5px;
+}
+
+.dragArea{
+	min-height:80px;
+}
