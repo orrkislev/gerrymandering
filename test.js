@@ -1,6 +1,7 @@
-Vue.component('city', {
-	props: {'name':String,
-			'votes':Array,
+Vue.component('list-item', {
+	props: {'type':String,
+			'name':String,
+			'items':Array,
 			'sum':Number
 			},
 	data: function () {
@@ -8,7 +9,7 @@ Vue.component('city', {
 			expanded: false
 			}
 		},
-	template:'#city-template',
+	template:'#list-item-template',
 	methods:{
 		openAndClose: function(){
 			this.expanded = !this.expanded;
@@ -33,7 +34,7 @@ var vm = new Vue({
 					cityVotes.push({name:party,votes:votesData[city][party]});
 				}
 				cityVotes.sort(function(a, b){return b.votes-a.votes});
-				this.listAll.push({name:city, votes:cityVotes, sum:allVotes});
+				this.listAll.push({type:'city', name:city, items:cityVotes, sum:allVotes});
 			}
 		},
 	methods:{
@@ -54,22 +55,29 @@ var vm = new Vue({
 				console.log("add List");
 				this.lists.unshift(
 					{   
-						listName:'new list',
+						name:'new list',
 						listItems:[]
 					}
 				);
 			},
+			save: function(id){
+				groupName = this.lists[id].name
+				groupItems = []
+				groupSum = 0
+				for (i = 0;i<this.lists[id].listItems.length;i++){
+					item = this.lists[id].listItems[i]
+					groupSum += item.sum
+					groupItems.push(item)
+				}
+				this.listAll.push({type:'group', name:groupName, items: groupItems, sum:groupSum})
+				this.lists.splice(id,1);
+			},
 			listTotal: function(id){
+				console.log('listTotal')
 				totalVotes = {};
 				for (i = 0; i<this.lists[id].listItems.length; i++){
 					item = this.lists[id].listItems[i];
-					for (j=0;j<item.votes.length;j++){
-						party = item.votes[j]
-						if (!(party.name in totalVotes)){
-							totalVotes[party.name] = 0;
-						}
-						totalVotes[party.name] += party.votes;
-					}
+					totalVotes = addVotesFromItem(totalVotes,item)
 				}
 				var sortable = [];
 				sum = 0
@@ -78,7 +86,25 @@ var vm = new Vue({
 					sum += totalVotes[party]
 				}
 				sortable = sortable.sort(function(a,b) { return b[1]-a[1] });
-				return [sortable[0][0],sum]
+				return ["Sum of all Votes - "+sum,"Winning Party - "+sortable[0][0]]
 			}
 		}
 	});
+	
+	function addVotesFromItem(totalVotes,item){
+		if (item.type=="city"){
+			for (var j=0;j<item.items.length;j++){
+				party = item.items[j]
+				if (!(party.name in totalVotes)){
+					totalVotes[party.name] = 0;
+				}
+				totalVotes[party.name] += party.votes;
+			}
+		} else if (item.type=="group"){
+			for (var j=0;j<item.items.length;j++){
+				subItem = item.items[j]
+				totalVotes = addVotesFromItem(totalVotes,subItem)
+			}
+		}
+		return totalVotes;
+	}

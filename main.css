@@ -12,10 +12,19 @@
 
 .list-item{
 	background-color: #ccc;
-	padding: 5px;
+	padding-top: 5px;
 	margin: 5px;
 }
 
 .dragArea{
 	min-height:80px;
+}
+
+.list-item-data{
+	background-color: #EEE;
+	padding-top:5px;
+}
+
+.list-name{
+	width: 50%;
 }

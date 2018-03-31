@@ -14,17 +14,16 @@
 			<input type="range" min="1" max="100000" value="30000" class="slider" v-model="showThreshold">
 			<draggable class="dragArea" :list="listAll" :options="{group:'cities'}" @change="updateChange">
 				<div v-for="item in listAll" v-if="item.sum>showThreshold">
-					<city v-bind="item"></city>
+					<list-item v-bind="item"></list-item>
 				</div>
 			</draggable>
 		</div>
 		
 		<div class='list' v-for="(myList,listIndex) in lists">
-			<input class='list-name' v-model="myList.listName">
 			<button v-on:click="remove(listIndex)">X</button>
 			<draggable class="dragArea" :list="myList.listItems" :options="{group:'cities'}" @change="updateChange">
 				<div v-for="item in myList.listItems" v-if="item.sum>showThreshold">
-					<city v-bind="item"></city>
+					<list-item v-bind="item"></list-item>
 				</div>
 			</draggable>
 			<div v-if="myList.listItems.length>0">
@@ -33,20 +32,29 @@
 					<br>
 				</span>
 			</div>
+			<input class='list-name' v-model="myList.name">
+			<button v-on:click="save(listIndex)">Save</button>
 		</div>
 
 		<button v-on:click="addList"> add list </button>
     </div>
 	
 	
-	<script type="text/x-template" id="city-template">
-		<div class="list-item" @click="openAndClose">
-			{{name}}
-			<div v-if="expanded">
-				<span v-for="party in votes">
-					{{ party.name }} - {{party.votes}}
-					<br>
-				</span>
+	<script type="text/x-template" id="list-item-template">
+		<div class="list-item" >
+			<div class="list-item-title" @click="openAndClose">{{name}}</div>
+			<div v-if="expanded" class='list-item-data'>
+				<div v-if="type=='city'">
+					<span v-for="party in items">
+						{{ party.name }} - {{party.votes}}
+						<br>
+					</span>
+				</div>
+				<div v-if="type=='group'">
+					<div v-for="item in items">
+						<list-item v-bind="item"></list-item>
+					</div>
+				</div>
 			</div>	
 		</div>
 	</script>
